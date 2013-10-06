@@ -2,9 +2,10 @@ StudySniffer
 ============
 TODO
 ----
-Server application
-'Score' clients based on their signal strength
-Upload current client info to server
+-[x] Sniff for clients and signal strength
+-[ ] Server application
+-[ ] 'Score' clients based on their signal strength
+-[ ] Upload current client info to server
 
 Dependencies
 ------------
