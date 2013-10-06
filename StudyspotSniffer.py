@@ -45,5 +45,6 @@ class StudySniffer():
 		self.clients.append([mac, signal, originTime])
 		print(mac + "\t" + str(signal) + "dB" + "\t" + str(originTime))
 
-sniffer = StudySniffer()
-sniff(iface=sniffer.getInterface(), prn=sniffer.sniffWifi)	
+if __name__ == "__main__":
+	sniffer = StudySniffer()
+	sniff(iface=sniffer.getInterface(), prn=sniffer.sniffWifi)	
