@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from __future__ import print_function
+from __future__ import print_function, division
 from scapy.all import *
 import time
 
@@ -23,6 +23,7 @@ class StudySniffer():
 		if (time.time()-self.initTime > self.COUNT_INTERVAL):
 			self.initTime = time.time()
 			print("Client count: " + str(len(self.clients)))
+			print("Study Spot Score (tm): " + str(self.scoreClients()))
 		if packet.haslayer(Dot11):
 			if packet.type == 0 and packet.subtype in self.clientTypes:
 				if(len(self.clients) == 0):
@@ -33,6 +34,7 @@ class StudySniffer():
 						self.clients.pop(index)
 					if packet.addr2 == clientMac:
 						isUnique = False
+						self.clients[index][1]=clientSignal
 						self.clients[index][2]=time.time()
 					index = index + 1
 				if (isUnique):
@@ -44,6 +46,13 @@ class StudySniffer():
 		originTime = time.time()
 		self.clients.append([mac, signal, originTime])
 		print(mac + "\t" + str(signal) + "dB" + "\t" + str(originTime))
+
+	def scoreClients(self):
+		score = 0.0
+		for mac, signal, time in self.clients:
+			score += (1 + abs(signal)/100)
+
+		return score
 
 if __name__ == "__main__":
 	sniffer = StudySniffer()
