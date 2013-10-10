@@ -2,6 +2,8 @@
 from __future__ import print_function, division
 from scapy.all import *
 import time
+import json
+import hashlib
 
 class StudySniffer():
 
@@ -9,10 +11,30 @@ class StudySniffer():
 		self.interface = "mon0"
 		self.clients = []
 		self.clientTypes = (0, 2, 4)
-
 		self.initTime = time.time()
+
 		self.COUNT_INTERVAL = 10
 		self.DISCO_INTERVAL = 30
+		self.SERVER = ""
+		self.LOCATION = ""
+
+		self.loadConfig()
+
+	def loadConfig(self):
+		config = open("sniffer.conf", "r")
+		for line in config:
+			if (not "#" in line and ":" in line):
+				option = line.split(":")[0].strip().lower()
+				setting = line.split(":")[1].strip().lower()
+
+				if option == "server":
+					self.SERVER = setting
+				if option == "location":
+					self.LOCATION = setting
+				if option == "disco_interval":
+					self.DISCO_INTERVAL = setting
+				if option == "count_interval":
+					self.COUNT_INTERVAL = setting
 
 	def getInterface(self):
 		return self.interface
@@ -29,6 +51,11 @@ class StudySniffer():
 				if(len(self.clients) == 0):
 					self.addClient(packet)
 				for clientMac, clientSignal, clientTime  in self.clients:
+
+					# Right now it just prints out, but here is where 
+					#   the json object would be uploaded to the server
+					print(self.jsonEncapsulate(clientMac, clientSignal, clientTime))
+
 					if (time.time()-clientTime > self.DISCO_INTERVAL):
 						print("Disassociate: " + clientMac)
 						self.clients.pop(index)
@@ -36,7 +63,9 @@ class StudySniffer():
 						isUnique = False
 						self.clients[index][1]=clientSignal
 						self.clients[index][2]=time.time()
+
 					index = index + 1
+
 				if (isUnique):
 					self.addClient(packet)
 
@@ -53,6 +82,11 @@ class StudySniffer():
 			score += (1 + abs(signal)/100)
 
 		return score
+
+	def jsonEncapsulate(self, mac, signal, time):
+		oui = mac[0:8]
+		hashMac = hashlib.sha512(mac).hexdigest()
+		return json.JSONEncoder().encode({"id":hashMac, "oui":oui, "signal":signal, "time":time, "location":self.LOCATION})
 
 if __name__ == "__main__":
 	sniffer = StudySniffer()
