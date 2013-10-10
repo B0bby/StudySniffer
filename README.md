@@ -1,15 +1,10 @@
 StudySniffer
-============
-## TODO
-- [x] Sniff for clients and signal strength
-- [ ] Server application
-- [ ] 'Score' clients based on their signal strength
-- [ ] Upload current client info to server
-
+***
 ## Dependencies
 * scapy 2.2.0
 * python 2.7.4 +
+* aircrack-ng 1.1
 
 ## Setup
-* Put wireless interface into monitor mode
-* Run script with superuser permissions
+* Put desired wireless interface into monitor mode
+* Run StudyspotSniffer.py
