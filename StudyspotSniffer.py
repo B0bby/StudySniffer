@@ -8,15 +8,15 @@ import hashlib
 class StudySniffer():
 
 	def __init__(self):
-		self.interface = "mon0"
 		self.clients = []
 		self.clientTypes = (0, 2, 4)
 		self.initTime = time.time()
 
 		self.COUNT_INTERVAL = 10
 		self.DISCO_INTERVAL = 30
-		self.SERVER = ""
-		self.LOCATION = ""
+		self.INTERFACE = "mon0"
+		self.SERVER = "192.168.1.1"
+		self.LOCATION = "The Moon"
 
 		self.loadConfig()
 
@@ -27,6 +27,8 @@ class StudySniffer():
 				option = line.split(":")[0].strip().lower()
 				setting = line.split(":")[1].strip().lower()
 
+				if option == "interface":
+					self.INTERFACE = setting
 				if option == "server":
 					self.SERVER = setting
 				if option == "location":
