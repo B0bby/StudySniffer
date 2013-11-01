@@ -39,26 +39,31 @@ class StudySniffer():
 					self.COUNT_INTERVAL = setting
 
 	def getInterface(self):
-		return self.interface
+		return self.INTERFACE
+
+	def isTimeForDissociate(self):
+		return time.time()-clientTime > self.DISCO_INTERVAL
+
+	def noClientsInArray(self):
+		return len(self.clients) == 0
+
+	def isTimeToPrintStatistics(self):
+		return time.time()-self.initTime > self.COUNT_INTERVAL
 
 	def sniffWifi(self, packet):
 		isUnique = True
 		index = 0
-		if (time.time()-self.initTime > self.COUNT_INTERVAL):
+		if (isTimeToPrintStatistics()):
 			self.initTime = time.time()
 			print("Client count: " + str(len(self.clients)))
 			print("Study Spot Score (tm): " + str(self.scoreClients()))
 		if packet.haslayer(Dot11):
 			if packet.type == 0 and packet.subtype in self.clientTypes:
-				if(len(self.clients) == 0):
+				if (noClientsInArray()):
 					self.addClient(packet)
 				for clientMac, clientSignal, clientTime  in self.clients:
 
-					# Right now it just prints out, but here is where 
-					#   the json object would be uploaded to the server
-					print(self.jsonEncapsulate(clientMac, clientSignal, clientTime))
-
-					if (time.time()-clientTime > self.DISCO_INTERVAL):
+					if (isTimeForDissociate()):
 						print("Disassociate: " + clientMac)
 						self.clients.pop(index)
 					if packet.addr2 == clientMac:
@@ -76,6 +81,12 @@ class StudySniffer():
 		signal = -(256 - ord(packet.notdecoded[14]))
 		originTime = time.time()
 		self.clients.append([mac, signal, originTime])
+
+		jsonOut = open("json-output.txt", "a")
+		jsonOut.write(self.jsonEncapsulate(mac, signal, originTime))
+		jsonOut.write("\n")
+		jsonOut.close()
+
 		print(mac + "\t" + str(signal) + "dB" + "\t" + str(originTime))
 
 	def scoreClients(self):
