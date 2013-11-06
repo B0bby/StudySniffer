@@ -4,6 +4,8 @@ from scapy.all import *
 import time
 import json
 import hashlib
+import urllib2
+import urllib
 
 class StudySniffer():
 
@@ -39,12 +41,12 @@ class StudySniffer():
 				if option == "count_interval":
 					self.COUNT_INTERVAL = setting
 				if option == "remote_url":
-					self.REMOTE_URL = setting
+					self.REMOTE_URL = "http://" + setting
 
 	def getInterface(self):
 		return self.INTERFACE
 
-	def isTimeForDissociate(self):
+	def isTimeForDissociate(self, clientTime):
 		return time.time()-clientTime > self.DISCO_INTERVAL
 
 	def noClientsInArray(self):
@@ -56,18 +58,19 @@ class StudySniffer():
 	def sniffWifi(self, packet):
 		isUnique = True
 		index = 0
-		if (isTimeToPrintStatistics()):
+		if (self.isTimeToPrintStatistics()):
 			self.initTime = time.time()
-			print("Client count: " + str(len(self.clients)))
-			print("Study Spot Score (tm): " + str(self.scoreClients()))
+			# print("Client count: " + str(len(self.clients)))
+			# print("Study Spot Score (tm): " + str(self.scoreClients()))
+			print(len(self.clients))
 		if packet.haslayer(Dot11):
 			if packet.type == 0 and packet.subtype in self.clientTypes:
-				if (noClientsInArray()):
+				if (self.noClientsInArray()):
 					self.addClient(packet)
 				for clientMac, clientSignal, clientTime  in self.clients:
 
-					if (isTimeForDissociate()):
-						print("Disassociate: " + clientMac)
+					if (self.isTimeForDissociate(clientTime)):
+						# print("Disassociate: " + clientMac)
 						self.clients.pop(index)
 					if packet.addr2 == clientMac:
 						isUnique = False
@@ -85,16 +88,23 @@ class StudySniffer():
 		originTime = time.time()
 		self.clients.append([mac, signal, originTime])
 
-		jsonResults = self.jsonEncapsulate(mac, signal, originTime)
+		dictResults = self.toDictionary(mac, signal, originTime)
 
-		# Writing out to log. TODO: format should be changed to be more log friendly. 
-		jsonOut = open("json-output.txt", "a")
-		jsonOut.write(jsonResults)
-		jsonOut.write("\n")
-		jsonOut.close()
+		self.logClientInfoDictionary(dictResults)
+		self.pushClientInfoDictionaryToServer(dictResults)
+		self.printClientInfoToStdOut(mac, signal, originTime)
 
-		urllib2..urlopen(REMOTE_URL,  urllib.urlencode(jsonResults))
+	def logClientInfoDictionary(self, dictResults):
+		# TODO: format should be changed to be more log friendly. 
+		dictionaryOut = open("json-output.txt", "a")
+		dictionaryOut.write(str(dictResults))
+		dictionaryOut.write("\n")
+		dictionaryOut.close()
 
+	def pushClientInfoDictionaryToServer(self, dictResults):
+		urllib2.urlopen(self.REMOTE_URL, urllib.urlencode(dictResults))
+
+	def printClientInfoToStdOut(self, mac, signal, originTime):
 		print(mac + "\t" + str(signal) + "dB" + "\t" + str(originTime))
 
 	def scoreClients(self):
@@ -104,10 +114,17 @@ class StudySniffer():
 
 		return score
 
+	# Deprecated
 	def jsonEncapsulate(self, mac, signal, time):
 		oui = mac[0:8]
 		hashMac = hashlib.sha512(mac).hexdigest()
 		return json.JSONEncoder().encode({"id":hashMac, "oui":oui, "signal":signal, "time":time, "location":self.LOCATION})
+
+	def toDictionary(self, mac, signal, time):
+		oui = mac[0:8]
+		hashMac = hashlib.sha512(mac).hexdigest()
+		return {"id":hashMac, "oui":oui, "signal":signal, "time":time, "location":self.LOCATION}
+
 
 if __name__ == "__main__":
 	sniffer = StudySniffer()
