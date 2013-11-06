@@ -19,6 +19,7 @@ class StudySniffer():
 		self.INTERFACE = "mon0"
 		self.SERVER = "192.168.1.1"
 		self.LOCATION = "The Moon"
+		self.DEVICE = "A computer"
 		self.REMOTE_URL = "http://change.this.please.com/packets"
 
 		self.loadConfig()
@@ -36,6 +37,8 @@ class StudySniffer():
 					self.SERVER = setting
 				if option == "location":
 					self.LOCATION = setting
+				if option == "device":
+					self.DEVICE = setting
 				if option == "disco_interval":
 					self.DISCO_INTERVAL = setting
 				if option == "count_interval":
@@ -123,7 +126,7 @@ class StudySniffer():
 	def toDictionary(self, mac, signal, time):
 		oui = mac[0:8]
 		hashMac = hashlib.sha512(mac).hexdigest()
-		return {"id":hashMac, "oui":oui, "signal":signal, "time":time, "location":self.LOCATION}
+		return {"id":hashMac, "oui":oui, "signal":signal, "time":time, "location":self.LOCATION, "device": self.DEVICE}
 
 
 if __name__ == "__main__":
