@@ -17,6 +17,7 @@ class StudySniffer():
 		self.INTERFACE = "mon0"
 		self.SERVER = "192.168.1.1"
 		self.LOCATION = "The Moon"
+		self.REMOTE_URL = "http://change.this.please.com/packets"
 
 		self.loadConfig()
 
@@ -37,6 +38,8 @@ class StudySniffer():
 					self.DISCO_INTERVAL = setting
 				if option == "count_interval":
 					self.COUNT_INTERVAL = setting
+				if option == "remote_url":
+					self.REMOTE_URL = setting
 
 	def getInterface(self):
 		return self.INTERFACE
@@ -82,10 +85,15 @@ class StudySniffer():
 		originTime = time.time()
 		self.clients.append([mac, signal, originTime])
 
+		jsonResults = self.jsonEncapsulate(mac, signal, originTime)
+
+		# Writing out to log. TODO: format should be changed to be more log friendly. 
 		jsonOut = open("json-output.txt", "a")
-		jsonOut.write(self.jsonEncapsulate(mac, signal, originTime))
+		jsonOut.write(jsonResults)
 		jsonOut.write("\n")
 		jsonOut.close()
+
+		urllib2..urlopen(REMOTE_URL,  urllib.urlencode(jsonResults))
 
 		print(mac + "\t" + str(signal) + "dB" + "\t" + str(originTime))
 
