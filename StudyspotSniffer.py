@@ -75,6 +75,8 @@ class StudySniffer():
 					if (self.isTimeForDissociate(clientTime)):
 						# print("Disassociate: " + clientMac)
 						self.clients.pop(index)
+						if (self.noClientsInArray()):
+							break
 					if packet.addr2 == clientMac:
 						isUnique = False
 						self.clients[index][1]=clientSignal
