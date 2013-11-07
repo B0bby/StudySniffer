@@ -87,7 +87,7 @@ class StudySniffer():
 
 	def addClient(self, packet):
 		mac = packet.addr2
-		signal = -(256 - ord(packet.notdecoded[14]))
+		signal = -(256-ord(packet.notdecoded[-4:-3]))
 		originTime = time.time()
 		self.clients.append([mac, signal, originTime])
 
@@ -131,4 +131,4 @@ class StudySniffer():
 
 if __name__ == "__main__":
 	sniffer = StudySniffer()
-	sniff(iface=sniffer.getInterface(), prn=sniffer.sniffWifi)	
+	sniff(iface=sniffer.getInterface(), prn=sniffer.sniffWifi, store=0)
