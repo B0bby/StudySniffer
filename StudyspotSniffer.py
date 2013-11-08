@@ -65,7 +65,6 @@ class StudySniffer():
 			self.initTime = time.time()
 			# print("Client count: " + str(len(self.clients)))
 			# print("Study Spot Score (tm): " + str(self.scoreClients()))
-			print(len(self.clients))
 		if packet.haslayer(Dot11):
 			if packet.type == 0 and packet.subtype in self.clientTypes:
 				if (self.noClientsInArray()):
@@ -75,6 +74,7 @@ class StudySniffer():
 					if (self.isTimeForDissociate(clientTime)):
 						# print("Disassociate: " + clientMac)
 						self.clients.pop(index)
+						print(len(self.clients))
 						if (self.noClientsInArray()):
 							break
 					if packet.addr2 == clientMac:
