@@ -6,9 +6,8 @@
 
 #### Setup
 * Put desired wireless interface into monitor mode
-	* iw dev wlan0 interface add mon0 type monitor
-	* sudo ip link set mon0 up
-	* python StudyspotSniffer.py
+	* iw dev [interface] interface add mon0 type monitor
+	* ip link set mon0 up
 * Run StudyspotSniffer.py
 
 #### TODO
