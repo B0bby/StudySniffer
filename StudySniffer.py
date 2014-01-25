@@ -8,9 +8,9 @@ import urllib2
 import urllib
 
 class StudySniffer():
-	clientInfoDictStack[];
 
 	def __init__(self):
+		self.clientInfoDictStack = []
 		self.clients = []
 		self.clientTypes = (0, 2, 4)
 		self.initTime = time.time()
@@ -20,32 +20,49 @@ class StudySniffer():
 		self.INTERFACE = "mon0"
 		self.SERVER = "192.168.1.1"
 		self.LOCATION = "The Moon"
-		self.DEVICE = "A computer"
+		self.NAME = "A computer"
 		self.REMOTE_URL = "http://change.this.please.com/packets"
 
 		self.loadConfig()
 
 	def loadConfig(self):
+		settingsFlag = False
+		netctlFlag   = False
+
 		config = open("sniffer.conf", "r")
 		for line in config:
-			if (not "#" in line and ":" in line):
-				option = line.split(":")[0].strip().lower()
-				setting = line.split(":")[1].strip().lower()
+			if ( line.strip() != "" ):
+				if ( line.strip()[0] != "#" ):
+					if ( "!" in line ):
+						settingsFlag = False
+						netctlFlag   = False
+						if ( "settings" in line ):
+							settingsFlag = True
+						if ( "netctl" in line ):
+							netctlFlag = True
+						continue
 
-				if option == "interface":
-					self.INTERFACE = setting
-				if option == "server":
-					self.SERVER = setting
-				if option == "location":
-					self.LOCATION = setting
-				if option == "device":
-					self.DEVICE = setting
-				if option == "disco_interval":
-					self.DISCO_INTERVAL = setting
-				if option == "count_interval":
-					self.COUNT_INTERVAL = setting
-				if option == "remote_url":
-					self.REMOTE_URL = "http://" + setting
+					if ( netctlFlag ):
+						continue
+
+					if ( settingsFlag ):
+						option = line.split("=")[0].strip().lower()
+						setting = line.split("=")[1].strip().lower()
+
+						if option == "interface":
+							self.INTERFACE = setting
+						if option == "server":
+							self.SERVER = setting
+						if option == "location":
+							self.LOCATION = setting
+						if option == "name":
+							self.NAME = setting
+						if option == "disco_interval":
+							self.DISCO_INTERVAL = setting
+						if option == "count_interval":
+							self.COUNT_INTERVAL = setting
+						if option == "remote_url":
+							self.REMOTE_URL = "http://" + setting
 
 	def getInterface(self):
 		return self.INTERFACE
@@ -62,8 +79,8 @@ class StudySniffer():
 	def sniffWifi(self, packet):
 		isUnique = True
 		index = 0
-		if (len(clientInfoDictStack) > 0):
-			sendClientDataToServer();
+		if (len(self.clientInfoDictStack) > 0):
+			self.sendClientDataToServer();
 		if (self.isTimeToPrintStatistics()):
 			self.initTime = time.time()
 		if packet.haslayer(Dot11):
@@ -93,12 +110,13 @@ class StudySniffer():
 		originTime = time.time()
 		self.clients.append([mac, signal, originTime])
 
-		clientInfoDict = createClientInfoDict(mac, signal, originTime)
+		clientInfoDict = self.createClientInfoDict(mac, signal, originTime)
 
-		clientInfoDictStack.append(clientInfoDict)
 		self.logClientInfo(clientInfoDict)
-		self.pushClientInfoToServer(clientInfoDict)
 		self.printClientInfoToStdOut(mac, signal, originTime)
+		self.clientInfoDictStack.append(clientInfoDict)
+
+		self.sendClientDataToServer()
 
 	def logClientInfo(self, clientInfoDict):
 		# TODO: format should be changed to be more log friendly. 
@@ -108,10 +126,10 @@ class StudySniffer():
 		dictionaryOut.close()
 
 	def sendClientDataToServer(self):
-		for x in range(0,len(clientInfoDictStack)):
+		for x in range(0,len(self.clientInfoDictStack)):
 			try:
-				urllib2.urlopen(self.REMOTE_URL, urllib.urlencode(clientInfoDictStack[x]))
-				clientInfoDictStack.pop(x)
+				urllib2.urlopen(self.REMOTE_URL, urllib.urlencode(self.clientInfoDictStack[x]))
+				self.clientInfoDictStack.pop(x)
 			except:
 				print("Couldn't contact server. Will re-attempt.")
 				break
@@ -122,12 +140,14 @@ class StudySniffer():
 	def createClientInfoDict(self, mac, signal, time):
 		oui = mac[0:8]
 		hashMac = hashlib.sha512(mac).hexdigest()
-		clientInfoDict = {"id":hashMac, 
-					  "oui":oui, 
-					  "signal":signal, 
-					  "time":time, 
-					  "location":self.LOCATION, 
-					  "device": self.DEVICE }
+		clientInfoDict = {
+			"id":hashMac, 
+			"oui":oui, 
+			"signal":signal, 
+			"time":time, 
+			"location":self.LOCATION, 
+			"NAME": self.NAME 
+		}
 		return clientInfoDict
 
 
