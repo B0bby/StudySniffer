@@ -18,7 +18,6 @@ class StudySniffer():
 		self.COUNT_INTERVAL = 10
 		self.DISCO_INTERVAL = 30
 		self.INTERFACE = "mon0"
-		self.SERVER = ""
 		self.LOCATION = ""
 		self.NAME = ""
 		self.REMOTE_URL = ""
@@ -51,8 +50,6 @@ class StudySniffer():
 
 						if option == "interface":
 							self.INTERFACE = setting
-						if option == "server":
-							self.SERVER = setting
 						if option == "location":
 							self.LOCATION = setting
 						if option == "name":

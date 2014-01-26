@@ -20,6 +20,7 @@ The 'sniffing' aspect of the script is based on code from [this](http://pen-test
 * Run setup.py
 
 #### Todo
+* Setup should parse config file for missing parameters
 * Setup should check if network connection is wired
 * Setup should create cron job for updating
 * Setup should set up daemon for sniffer
