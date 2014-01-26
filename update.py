@@ -3,4 +3,5 @@
 
 import subprocess
 
-subprocess.Popen(["git", "pull"])
+subprocess.Popen(["git", "fetch", "--all"])
+subprocess.Popen(["git", "reset", "--hard", "origin/master"])
