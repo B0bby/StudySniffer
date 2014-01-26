@@ -36,3 +36,4 @@ nosetests.xml
 
 #b0b's stuff
 json-output.txt
+sniffer.conf
