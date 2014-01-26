@@ -3,5 +3,5 @@
 
 import subprocess
 
-subprocess.Popen(["git", "fetch", "--all"])
-subprocess.Popen(["git", "reset", "--hard", "origin/master"])
+subprocess.check_output(["git", "fetch", "--all"])
+subprocess.check_output(["git", "reset", "--hard", "origin/master"])
