@@ -1,9 +1,11 @@
 ##StudySniffer
 ***
 
-The goal of this project is to sniff wireless ARP packets in common 'study' locations on campus to determine their relative level of activity, then display this data in the form of a heat-map in order to allow students to make a slightly more informed decision about where they want to study.
+The goal of this project is to sniff for active wireless clients in common 'study' locations on campus to determine their relative level of activity, then display this data in the form of a heat-map in order to allow students to make a slightly more informed decision about where they want to study.
 
 These are the scripts for setting up and controlling the hardware side of the project -- a raspberry pi with two wifi dongles.
+
+The 'sniffing' aspect of the script is based on code from [this](http://pen-testing.sans.org/blog/2011/10/13/special-request-wireless-client-sniffing-with-scapy/comment-page-1/) article.
 
 ---
 
