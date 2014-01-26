@@ -35,9 +35,5 @@ nosetests.xml
 .pydevproject
 
 #b0b's stuff
-<<<<<<< HEAD
 json-output.txt
 sniffer.conf
-=======
-json-output.txt
->>>>>>> 95b65f6b48928ee693510d33b742cd9d9251e86e
