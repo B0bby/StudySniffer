@@ -18,10 +18,10 @@ class StudySniffer():
 		self.COUNT_INTERVAL = 10
 		self.DISCO_INTERVAL = 30
 		self.INTERFACE = "mon0"
-		self.SERVER = "192.168.1.1"
-		self.LOCATION = "The Moon"
-		self.NAME = "A computer"
-		self.REMOTE_URL = "http://change.this.please.com/packets"
+		self.SERVER = ""
+		self.LOCATION = ""
+		self.NAME = ""
+		self.REMOTE_URL = ""
 
 		self.loadConfig()
 
