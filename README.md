@@ -33,5 +33,3 @@ Pretty sloppy at the moment. I've only ever run it on cloned Raspberry Pis, but 
 For one, it is a horrifying, two-faced monstrosity; a chimeran application -- half written in python3 and half in python2. You'll need both in order to control this beast. Running the 'setup.py' script in python3 should be enough, though, as the script *itself* then launches the *actual* script in python2 using subprocess.
 
 There are more reasons, but for some reason they escape me.
-
-Anyhow, it's a work in progress, 
